@@ -1,4 +1,4 @@
-import { Client, Intents, TextChannel } from 'discord.js';
+import { Client, Intents } from 'discord.js';
 import { config } from 'dotenv';
 import { ApiPromise, WsProvider } from '@polkadot/api';
 import { formatBalance } from '@polkadot/util';
@@ -15,8 +15,7 @@ const client = new Client({
 const {
   BIG_TIME_CONTROLLER_SIG_EXTENSION,
   BIG_TIME,
-  BOOSH_TESTING_SERVER,
-  CFG_STAKING_REPORTER_CHANNEL,
+  DISCORD_USER_ID,
   JP_WALLET,
   MULTISIG_BIG_TIME_CONTROLLER,
   ONE_YEAR_CONTROLLER_EXTENSION,
@@ -83,9 +82,6 @@ client.once('ready', () => {
 
       await addNewWalletTotals(personalWalletsTotal, bigTimeWalletsTotal);
 
-      const guild = client.guilds.cache.get(BOOSH_TESTING_SERVER);
-      const channel = guild.channels.cache.get(CFG_STAKING_REPORTER_CHANNEL); // cfg-staking-reporter
-
       const personalWalletsGain = new BigNumber(personalWalletsTotal).minus(
         new BigNumber(yesterdayPersonalWalletsTotal),
       );
@@ -94,7 +90,9 @@ client.once('ready', () => {
         new BigNumber(yesterdayBigTimeWalletsTotal),
       );
 
-      (channel as TextChannel).send(`
+      const user = await client.users.fetch(DISCORD_USER_ID);
+
+      user.send(`
 Personal Wallets Total: ${new BigNumber(
         personalWalletsTotal,
       ).toFormat()} **+${personalWalletsGain.toFormat()}**
