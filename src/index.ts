@@ -4,6 +4,7 @@ import { ApiPromise, WsProvider } from '@polkadot/api';
 import { formatBalance } from '@polkadot/util';
 import cron from 'cron';
 import BigNumber from 'bignumber.js';
+import axios from 'axios';
 import { addNewWalletTotals, getYesterdayWalletTotals } from './db';
 
 config();
@@ -92,6 +93,16 @@ client.once('ready', () => {
 
       const user = await client.users.fetch(DISCORD_USER_ID);
 
+      const { data } = await axios(
+        'https://api.coingecko.com/api/v3/simple/price?ids=wrapped-centrifuge&vs_currencies=usd',
+      );
+
+      const cfgPrice = data['wrapped-centrifuge'].usd;
+
+      const dailyGain = personalWalletsGain.plus(
+        bigTimeWalletsGain.dividedBy(2),
+      );
+
       user.send(`
 Personal Wallets Total: ${new BigNumber(
         personalWalletsTotal,
@@ -103,7 +114,15 @@ Total: ${new BigNumber(personalWalletsTotal)
         .plus(new BigNumber(bigTimeWalletsTotal))
         .toFormat()} **+${personalWalletsGain
         .plus(bigTimeWalletsGain)
-        .toFormat()}**`);
+        .toFormat()}**
+
+CFG Price: $${cfgPrice}
+Daily Gain (CFG): ${dailyGain.toFormat()}
+Daily Gain (USD): $${dailyGain.multipliedBy(cfgPrice).toFormat()}
+Annual Gain (USD): $${dailyGain
+        .multipliedBy(cfgPrice)
+        .multipliedBy(365)
+        .toFormat()}`);
     },
     null,
     true,
