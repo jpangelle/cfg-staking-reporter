@@ -110,11 +110,9 @@ Personal Wallets Total: ${new BigNumber(
 Big Time Wallets Total: ${new BigNumber(
         bigTimeWalletsTotal,
       ).toFormat()} **+${bigTimeWalletsGain.toFormat()}**
-Total: ${new BigNumber(personalWalletsTotal)
-        .plus(new BigNumber(bigTimeWalletsTotal))
-        .toFormat()} **+${personalWalletsGain
-        .plus(bigTimeWalletsGain)
-        .toFormat()}**
+My Total: ${new BigNumber(personalWalletsTotal)
+        .plus(new BigNumber(bigTimeWalletsTotal).dividedBy(2))
+        .toFormat()}
 
 CFG Price: $${cfgPrice}
 Daily Gain (CFG): ${dailyGain.toFormat()}
