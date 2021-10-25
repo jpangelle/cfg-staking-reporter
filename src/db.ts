@@ -4,7 +4,7 @@ import { config } from 'dotenv';
 config();
 
 type WalletTotals = {
-  _id: string;
+  _id?: string;
   bigTimeWalletsTotal: string;
   personalWalletsTotal: string;
 };
@@ -17,7 +17,7 @@ export async function getYesterdayWalletTotals(): Promise<WalletTotals> {
   try {
     await mongoDBClient.connect();
     const database = mongoDBClient.db('cfg-staking');
-    const totals = database.collection<WalletTotals>('totals');
+    const totals = database.collection<WalletTotals>('totalslee');
 
     const walletTotals = await totals
       .find({})
@@ -26,7 +26,14 @@ export async function getYesterdayWalletTotals(): Promise<WalletTotals> {
       .project<WalletTotals>({ _id: 0 })
       .toArray();
 
-    return walletTotals[0];
+    if (walletTotals.length) {
+      return walletTotals[0];
+    }
+
+    return {
+      personalWalletsTotal: '0',
+      bigTimeWalletsTotal: '0',
+    };
   } catch (error) {
     console.log(error);
   }
