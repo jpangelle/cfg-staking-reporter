@@ -17,7 +17,7 @@ export async function getYesterdayWalletTotals(): Promise<WalletTotals> {
   try {
     await mongoDBClient.connect();
     const database = mongoDBClient.db('cfg-staking');
-    const totals = database.collection<WalletTotals>('totalslee');
+    const totals = database.collection<WalletTotals>('totals');
 
     const walletTotals = await totals
       .find({})
